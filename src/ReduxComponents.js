@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import Configuration from "./Configuration.js";
+import Org from "./Org.js";
 import OrgModal from "./OrgModal.js";
 
 import { createStore, combineReducers } from "redux";
@@ -106,7 +106,7 @@ var reducers = combineReducers({
 });
 
 var reduxComponents = {
-  Configuration: connect(mapStateToProps, mapDispatchToProps)(Configuration),
+  Org: connect(mapStateToProps, mapDispatchToProps)(Org),
   OrgModal: connect(mapStateToProps, mapDispatchToProps)(OrgModal),
   store: createStore(reducers),
 };

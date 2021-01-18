@@ -36,7 +36,7 @@ function App() {
 
         <Route path="/configuration">
         <Provider store={ReduxComponents.store}>
-          <ReduxComponents.Configuration />
+          <ReduxComponents.Org />
           </Provider>
         </Route>
       </Router>

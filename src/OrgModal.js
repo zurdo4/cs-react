@@ -7,13 +7,13 @@ import ModalFooter from "react-bootstrap/ModalFooter";
 import ModalTitle from "react-bootstrap/ModalTitle";
 
 import axios from "axios";
-import { setValue } from "./ReduxComponents";
+import { Alert } from "bootstrap";
 
 class OrgModal extends React.Component {
-  
   fetchData() {
     const url =
-      "http://localhost:8080/cs/admin/orgs/" + this.props.value.orgId_value;
+      "http://129.146.175.158:8080/cs/admin/orgs/" +
+      this.props.value.orgId_value;
     axios
       .get(url)
       .then((res) => {
@@ -26,7 +26,6 @@ class OrgModal extends React.Component {
   }
 
   componentDidUpdate() {
-  
     if (!this.props.updated.orgModal_updated) {
       if (this.props.value.orgId_value > 0) {
         this.fetchData();
@@ -46,77 +45,88 @@ class OrgModal extends React.Component {
     this.props.setUpdated("orgList", false);
   };
 
+  handleInputChange = (e) => {
+    this.props.setValue("orgCode", e.target.value);
+  };
+
+  submit = () => {
+    if (this.props.value.orgId_value > 0) {
+      this.put();
+    } else {
+      this.post();
+    }
+  };
+
+  post = () => {
+    const url = "http://129.146.175.158:8080/cs/admin/orgs/";
+    axios
+      .post(url, {
+        id: this.props.value.orgId_value,
+        code: this.props.value.orgCode_value,
+      })
+      .then((res) => {
+    
+     
+        this.closeModal();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  put = () => {
+    const url =
+      "http://129.146.175.158:8080/cs/admin/orgs/" +
+      this.props.value.orgId_value;
+    axios
+      .put(url, {
+        id: this.props.value.orgId_value,
+        code: this.props.value.orgCode_value,
+      })
+      .then((res) => {
+        this.closeModal();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   render() {
     return (
       <React.Fragment>
         <Modal show={this.props.visible.orgModal_visible ? true : false}>
-         
-          <ModalBody>
+          <form onSubmit={this.submit}>
+            <ModalHeader>
+              <ModalTitle>Hi</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              {/* <input type="hidden" value={this.props.value.orgId_value} />
+            <br /> */}
 
-            <p>El número de contacto no tiene 10 digitos!</p>
-          
-          </ModalBody>
-          <ModalFooter>
-            {/* <button
-              onClick={() => {
-                this.closeModal();
-              }}
-            >
-              Corregir correo
-            </button>
-            &nbsp; */}
-            <button
-              onClick={() => {
-                this.closeModal();
-              }}
-            >
-              Aceptar
-            </button>
-          </ModalFooter>
+              <input
+                name="orgCode_value"
+                onChange={this.handleInputChange}
+                value={this.props.value.orgCode_value}
+              />
+
+              <br />
+            </ModalBody>
+            <ModalFooter>
+              <button type="submit">Aceptar</button>
+              &nbsp;
+              <button
+                onClick={() => {
+                  this.closeModal();
+                }}
+              >
+                Cancelar
+              </button>
+            </ModalFooter>
+          </form>
         </Modal>
       </React.Fragment>
     );
   }
 }
-
-
-// render() {
-//   return (
-//     <React.Fragment>
-//       <Modal show={this.props.visible.orgModal_visible ? true : false}>
-//         <ModalHeader>
-//           <ModalTitle>Hi</ModalTitle>
-//         </ModalHeader>
-//         <ModalBody>
-//           <input value={this.props.value.orgId_value} />
-//           <br />
-//           <input value={this.props.value.orgCode_value} />
-//           <br />
-//         </ModalBody>
-//         <ModalFooter>
-//           <button
-//             onClick={() => {
-//               this.closeModal();
-//             }}
-//           >
-//             Aceptar
-//           </button>
-//           &nbsp;
-//           <button
-//             onClick={() => {
-//               this.closeModal();
-//             }}
-//           >
-//             Cancelar
-//           </button>
-//         </ModalFooter>
-//       </Modal>
-//     </React.Fragment>
-//   );
-// }
-// }
-
-
-
 
 export default OrgModal;

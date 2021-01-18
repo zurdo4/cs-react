@@ -14,7 +14,7 @@ class Org extends React.Component {
 
   fetchData() {
     axios
-      .get("http://localhost:8080/cs/admin/orgs")
+      .get("http://129.146.175.158:8080/cs/admin/orgs")
       .then((res) => {
         this.setState({ data: res.data });
         console.log("fetching data");
