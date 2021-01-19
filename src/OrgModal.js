@@ -1,15 +1,15 @@
 import Modal from "react-bootstrap/Modal";
 import React from "react";
-
-import ModalBody from "react-bootstrap/ModalBody";
-import ModalHeader from "react-bootstrap/ModalHeader";
-import ModalFooter from "react-bootstrap/ModalFooter";
-import ModalTitle from "react-bootstrap/ModalTitle";
-
 import axios from "axios";
-import { Alert } from "bootstrap";
+import "./App.css";
+
 
 class OrgModal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { message: "" };
+  }
+
   fetchData() {
     const url =
       "http://129.146.175.158:8080/cs/admin/orgs/" +
@@ -38,18 +38,35 @@ class OrgModal extends React.Component {
     }
   }
 
-  closeModal = () => {
+  closeModal = (e) => {
+    e.preventDefault();
     this.props.setValue("orgId", 0);
     this.props.setValue("orgCode", "");
     this.props.setVisible("orgModal", false);
-    this.props.setUpdated("orgList", false);
+    //this.props.setUpdated("orgList", false);
+    return false;
   };
 
   handleInputChange = (e) => {
     this.props.setValue("orgCode", e.target.value);
   };
 
-  submit = () => {
+  submit = (e) => {
+    if (this.props.value.orgCode_value === "") {
+      e.preventDefault();
+      this.setState({ message: "La clave es requerida" });
+      return;
+    }
+
+    var re = /^[A-Za-z0-9]+$/g;
+
+    if (!re.test(this.props.value.orgCode_value)) {
+      e.preventDefault();
+      this.setState({ message: "Solo letras y/o numeros sin espacios" });
+      return;
+    }
+
+   
     if (this.props.value.orgId_value > 0) {
       this.put();
     } else {
@@ -65,8 +82,6 @@ class OrgModal extends React.Component {
         code: this.props.value.orgCode_value,
       })
       .then((res) => {
-    
-     
         this.closeModal();
       })
       .catch((error) => {
@@ -95,33 +110,32 @@ class OrgModal extends React.Component {
     return (
       <React.Fragment>
         <Modal show={this.props.visible.orgModal_visible ? true : false}>
-          <form onSubmit={this.submit}>
-            <ModalHeader>
-              <ModalTitle>Hi</ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              {/* <input type="hidden" value={this.props.value.orgId_value} />
-            <br /> */}
-
-              <input
-                name="orgCode_value"
-                onChange={this.handleInputChange}
-                value={this.props.value.orgCode_value}
-              />
-
-              <br />
-            </ModalBody>
-            <ModalFooter>
-              <button type="submit">Aceptar</button>
+          <form onSubmit={this.submit} noValidate validated={this.isvalid}>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>Clave</label>
+                <input
+                  type="text"
+                  name="code"
+                  onChange={this.handleInputChange}
+                  value={this.props.value.orgCode_value}
+                  placeholder="Proporcione la clave"
+                  className="form-control"
+                />
+              </div>
+              {this.state.message !== "" && (
+                <div className="text-danger">{this.state.message}</div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button type="submit" className="btn btn-success">
+                Aceptar
+              </button>
               &nbsp;
-              <button
-                onClick={() => {
-                  this.closeModal();
-                }}
-              >
+              <button className="btn btn-primary" onClick={this.closeModal}>
                 Cancelar
               </button>
-            </ModalFooter>
+            </div>
           </form>
         </Modal>
       </React.Fragment>
