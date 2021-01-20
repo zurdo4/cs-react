@@ -3,47 +3,15 @@ import React from "react";
 import Table from "react-bootstrap/Table";
 import { Provider } from "react-redux";
 import ReduxComponents from "./ReduxComponents.js";
-import axios from "axios";
 import "./App.css";
 
 class Org extends React.Component {
-  // constructor(props) {
-  //   super(props);
-
-  //   this.state = { data: [] };
-  // }
-
-  // fetchData() {
-  //   axios
-  //     .get("http://129.146.175.158:8080/cs/admin/orgs")
-  //     .then((res) => {
-  //       this.setState({ data: res.data });
-  //       console.log("fetching data");
-  //     })
-  //     .catch((error) => console.log(error));
-  // }
-
   componentDidMount() {
     this.props.apiGet("orgList", []);
   }
 
-  // componentDidMount() {
-  //   this.fetchData();
-  //   this.props.setUpdated("orgList", true);
-  // }
-
-  // componentDidUpdate() {
-  //   if (!this.props.updated.orgList_updated) {
-  //     this.fetchData();
-  //     this.props.setUpdated("orgList", true);
-  //   }
-  // }
-
   showOrgModal = (id) => {
-    this.props.setValue("orgId", id);
-    this.props.setValue("orgCode", "");
-    this.props.setVisible("orgModal", true);
-    this.props.setUpdated("orgModal", false);
+    this.props.setVisible("orgModal", id);
   };
 
   // delete = (id) => {
@@ -96,6 +64,7 @@ class Org extends React.Component {
                           <button
                             className="btn btn-primary"
                             onClick={() => {
+                              this.props.apiGet("orgItem", org.id);
                               this.showOrgModal(org.id);
                             }}
                           >
@@ -105,6 +74,7 @@ class Org extends React.Component {
                           <button
                             className="btn btn-primary"
                             onClick={() => {
+                              this.props.apiGet("orgItem", org.id);
                               this.showOrgModal(org.id);
                             }}
                           >
@@ -122,8 +92,9 @@ class Org extends React.Component {
                           &nbsp;
                           <button
                             className="btn btn-danger"
-                            onClick={() => {
-                              this.delete(org.id);
+                            onClick={() => { 
+                         
+                              this.props.apiDelete("orgItem", org.id);
                             }}
                           >
                             Eliminar

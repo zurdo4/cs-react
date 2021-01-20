@@ -9,6 +9,10 @@ export const setVisible = function (obj, value) {
   return { type: "visible", obj: obj, value: value };
 };
 
+export const setHidden = function (obj, value) {
+  return { type: "hidden", obj: obj, value: value };
+};
+
 export const setUpdated = function (obj, value) {
   return { type: "updated", obj: obj, value: value };
 };
@@ -29,6 +33,10 @@ export const apiPut = function (obj, value) {
   return { type: "api-put", obj: obj, value: value };
 };
 
+export const apiDelete = function (obj, value) {
+  return { type: "api-delete", obj: obj, value: value };
+};
+
 export const apiReducer = function (
   state = { orgList: [], orgItem: { id: 0, code: "" } },
   action
@@ -37,6 +45,15 @@ export const apiReducer = function (
     switch (action.obj) {
       case "orgList":
         return Object.assign({}, state, { orgList: action.value });
+      case "orgItem":
+        return Object.assign({}, state, { orgItem: action.value });
+      default:
+        break;
+    }
+  }
+
+  if (action.type === "api-post") {
+    switch (action.obj) {
       case "orgItem":
         return Object.assign({}, state, { orgItem: action.value });
       default:
@@ -71,7 +88,7 @@ export const updatedReducer = function (
 };
 
 export const valueReducer = function (
-  state = { orgId_value: 0, orgCode_value: "" },
+  state = { orgId_value: 0, orgCode_value: "", message_value: "" },
   action
 ) {
   if (action.type === "value") {
@@ -80,6 +97,8 @@ export const valueReducer = function (
         return Object.assign({}, state, { orgId_value: action.value });
       case "orgCode":
         return Object.assign({}, state, { orgCode_value: action.value });
+      case "message":
+        return Object.assign({}, state, { message_value: action.value });
 
       default:
         break;
@@ -97,13 +116,22 @@ export const visibleReducer = function (
     switch (action.obj) {
       case "orgModal":
         return Object.assign({}, state, {
-          orgModal_visible: action.value,
+          orgModal_visible: true,
         });
       default:
         break;
     }
   }
-
+  if (action.type === "hidden") {
+    switch (action.obj) {
+      case "orgModal":
+        return Object.assign({}, state, {
+          orgModal_visible: false,
+        });
+      default:
+        break;
+    }
+  }
   return state;
 };
 
@@ -118,6 +146,10 @@ var mapStateToProps = function (state) {
 
 var mapDispatchToProps = function (dispatch) {
   return {
+    setHidden: function (obj, value) {
+      dispatch(setHidden(obj, value));
+    },
+
     setVisible: function (obj, value) {
       dispatch(setVisible(obj, value));
     },
@@ -135,6 +167,9 @@ var mapDispatchToProps = function (dispatch) {
     },
     apiPut: function (obj, value) {
       dispatch(apiPut(obj, value));
+    },
+    apiDelete: function (obj, value) {
+      dispatch(apiDelete(obj, value));
     },
   };
 };
@@ -156,22 +191,79 @@ export const logger = (store) => (next) => (action) => {
 };
 
 export const api = (store) => (next) => (action) => {
-  if (action.type === "api-get") {
-    switch (action.obj) {
-      case "orgList":
-        axios
-          .get("http://129.146.175.158:8080/cs/admin/orgs")
-          .then((res) => {
-            action.value = res.data;
-            return next(action);
-          })
-          .catch((error) => console.log(error));
-        break;
+  if (action.type === "api-get" && action.obj === "orgList") {
+    axios
+      .get("http://129.146.175.158:8080/cs/admin/orgs")
+      .then((res) => {
+        action.value = res.data;
+        return next(action);
+      })
+      .catch((error) => console.log(error));
+    return;
+  }
 
-      case "orgItem":
-        break;
-      default:
-        break;
+  if (action.type === "api-post" && action.obj === "orgItem") {
+    axios
+      .post("http://129.146.175.158:8080/cs/admin/orgs", action.value)
+      .then((res) => {
+        store.dispatch(apiGet("orgList", []));
+        store.dispatch(setHidden("orgModal"));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    return;
+  }
+
+  if (action.type === "api-delete" && action.obj === "orgItem") {
+    axios
+      .delete("http://129.146.175.158:8080/cs/admin/orgs/" + action.value)
+      .then((res) => {
+        store.dispatch(apiGet("orgList", []));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    return;
+  }
+
+  if (action.type === "api-put" && action.obj === "orgItem") {
+    axios
+      .post("http://129.146.175.158:8080/cs/admin/orgs", action.value)
+      .then((res) => {
+        store.dispatch(apiGet("orgList", []));
+        store.dispatch(setHidden("orgModal"));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    return;
+  }
+
+  if (action.type === "visible" && action.obj === "orgModal") {
+    store.dispatch(setValue("message", ""));
+
+    if (action.value > 0) {
+      axios
+        .get("http://129.146.175.158:8080/cs/admin/orgs/" + action.value)
+        .then((res) => {
+          action.value = { id: res.data.id, code: res.data.code };
+          store.dispatch(setValue("orgId", action.value.id));
+          store.dispatch(setValue("orgCode", action.value.code));
+
+          return next(action);
+        })
+        .catch((error) => console.log(error));
+      return;
+    } else {
+      action.value = { id: 0, code: "" };
+      store.dispatch(setValue("orgId", action.value.id));
+      store.dispatch(setValue("orgCode", action.value.code));
+
+      return next(action);
     }
   }
 

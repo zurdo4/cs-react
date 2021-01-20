@@ -1,49 +1,12 @@
 import Modal from "react-bootstrap/Modal";
 import React from "react";
-import axios from "axios";
+
 import "./App.css";
 
-
 class OrgModal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { message: "" };
-  }
-
-  fetchData() {
-    const url =
-      "http://129.146.175.158:8080/cs/admin/orgs/" +
-      this.props.value.orgId_value;
-    axios
-      .get(url)
-      .then((res) => {
-        this.props.setValue("orgId", res.data.id);
-        this.props.setValue("orgCode", res.data.code);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  componentDidUpdate() {
-    if (!this.props.updated.orgModal_updated) {
-      if (this.props.value.orgId_value > 0) {
-        this.fetchData();
-      } else {
-        this.props.setValue("orgId", 0);
-        this.props.setValue("orgCode", "");
-      }
-
-      this.props.setUpdated("orgModal", true);
-    }
-  }
-
   closeModal = (e) => {
     e.preventDefault();
-    this.props.setValue("orgId", 0);
-    this.props.setValue("orgCode", "");
-    this.props.setVisible("orgModal", false);
-    //this.props.setUpdated("orgList", false);
+    this.props.setHidden("orgModal");
     return false;
   };
 
@@ -54,7 +17,7 @@ class OrgModal extends React.Component {
   submit = (e) => {
     if (this.props.value.orgCode_value === "") {
       e.preventDefault();
-      this.setState({ message: "La clave es requerida" });
+      this.props.setValue("message", "La clave es requerida");
       return;
     }
 
@@ -62,55 +25,28 @@ class OrgModal extends React.Component {
 
     if (!re.test(this.props.value.orgCode_value)) {
       e.preventDefault();
-      this.setState({ message: "Solo letras y/o numeros sin espacios" });
+      this.props.setValue("message", "Solo letras y/o numeros sin espacios");
       return;
     }
 
-   
-    if (this.props.value.orgId_value > 0) {
-      this.put();
+    if (this.props.value.orgId_value === 0) {
+      this.props.apiPost("orgItem", {
+        id: this.props.value.orgId_value,
+        code: this.props.value.orgCode_value,
+      });
     } else {
-      this.post();
+      this.props.apiPut("orgItem", {
+        id: this.props.value.orgId_value,
+        code: this.props.value.orgCode_value,
+      });
     }
-  };
-
-  post = () => {
-    const url = "http://129.146.175.158:8080/cs/admin/orgs/";
-    axios
-      .post(url, {
-        id: this.props.value.orgId_value,
-        code: this.props.value.orgCode_value,
-      })
-      .then((res) => {
-        this.closeModal();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  put = () => {
-    const url =
-      "http://129.146.175.158:8080/cs/admin/orgs/" +
-      this.props.value.orgId_value;
-    axios
-      .put(url, {
-        id: this.props.value.orgId_value,
-        code: this.props.value.orgCode_value,
-      })
-      .then((res) => {
-        this.closeModal();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   };
 
   render() {
     return (
       <React.Fragment>
         <Modal show={this.props.visible.orgModal_visible ? true : false}>
-          <form onSubmit={this.submit} noValidate validated={this.isvalid}>
+          <form onSubmit={this.submit}>
             <div className="modal-body">
               <div className="form-group">
                 <label>Clave</label>
@@ -119,12 +55,14 @@ class OrgModal extends React.Component {
                   name="code"
                   onChange={this.handleInputChange}
                   value={this.props.value.orgCode_value}
-                  placeholder="Proporcione la clave"
+                  placeholder="Proporcione una clave para la organización"
                   className="form-control"
                 />
               </div>
-              {this.state.message !== "" && (
-                <div className="text-danger">{this.state.message}</div>
+              {this.props.message_value !== "" && (
+                <div className="text-danger">
+                  {this.props.value.message_value}
+                </div>
               )}
             </div>
             <div className="modal-footer">
