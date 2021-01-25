@@ -39,6 +39,15 @@ function App() {
           <ReduxComponents.Org />
           </Provider>
         </Route>
+
+        <Route path="/rfc">
+        <Provider store={ReduxComponents.store}>
+          <ReduxComponents.Rfc />
+          </Provider>
+        </Route>
+
+
+
       </Router>
 
     

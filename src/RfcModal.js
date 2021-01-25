@@ -3,19 +3,19 @@ import React from "react";
 
 import "./App.css";
 
-class OrgModal extends React.Component {
+class RfcModal extends React.Component {
   closeModal = (e) => {
     e.preventDefault();
-    this.props.setHidden("orgModal");
+    this.props.setHidden("rfcModal");
     return false;
   };
 
   handleInputChange = (e) => {
-    this.props.setValue("orgCode", e.target.value);
+    this.props.setValue("rfcCode", e.target.value);
   };
 
   submit = (e) => {
-    if (this.props.value.orgCode_value === "") {
+    if (this.props.value.rfcCode_value === "") {
       e.preventDefault();
       this.props.setValue("message", "La clave es requerida");
       return;
@@ -23,55 +23,29 @@ class OrgModal extends React.Component {
 
     var re = /^[A-Za-z0-9]+$/g;
 
-    if (!re.test(this.props.value.orgCode_value)) {
+    if (!re.test(this.props.value.rfcCode_value)) {
       e.preventDefault();
       this.props.setValue("message", "Solo letras y/o numeros sin espacios");
       return;
     }
 
-    if (this.props.value.orgId_value === 0) {
-      this.props.apiPost("orgItem", {
-        id: this.props.value.orgId_value,
-        code: this.props.value.orgCode_value,
+    if (this.props.value.rfcId_value === 0) {
+      this.props.apiPost("rfcItem", {
+        id: this.props.value.rfcId_value,
+        code: this.props.value.rfcCode_value,
       });
     } else {
-      this.props.apiPut("orgItem", {
-        id: this.props.value.orgId_value,
-        code: this.props.value.orgCode_value,
+      this.props.apiPut("rfcItem", {
+        id: this.props.value.rfcId_value,
+        code: this.props.value.rfcCode_value,
       });
     }
   };
 
-
-
-
-  render2() {
-    return (
-      <React.Fragment>
-        <Modal show={this.props.visible.orgModal_visible ? true : false}>
-          <form onSubmit={this.submit}>
-            <div className="modal-body">
-              <div className="form-group">
-                <p align="center">El número de contacto no tiene 10 dígitos.<br/>El número capturado excede los 10 o capturo menos dígitos.<br/> Favor de validar.</p>
-               
-              </div>
-            
-            </div>
-            <div className="modal-footer">
-              <button type="submit" >
-                Aceptar
-              </button>
-           
-            </div>
-          </form>
-        </Modal>
-      </React.Fragment>
-    );
-  }
   render() {
     return (
       <React.Fragment>
-        <Modal show={this.props.visible.orgModal_visible ? true : false}>
+        <Modal show={this.props.visible.rfcModal_visible ? true : false}>
           <form onSubmit={this.submit}>
             <div className="modal-body">
               <div className="form-group">
@@ -80,8 +54,8 @@ class OrgModal extends React.Component {
                   type="text"
                   name="code"
                   onChange={this.handleInputChange}
-                  value={this.props.value.orgCode_value}
-                  placeholder="Proporcione una clave para la organización"
+                  value={this.props.value.rfcCode_value}
+                  placeholder="Proporcione el RFC del contribuyente"
                   className="form-control"
                 />
               </div>
@@ -107,4 +81,4 @@ class OrgModal extends React.Component {
   }
 }
 
-export default OrgModal;
+export default RfcModal;

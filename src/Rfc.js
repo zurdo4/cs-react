@@ -3,20 +3,15 @@ import React from "react";
 import Table from "react-bootstrap/Table";
 import { Provider } from "react-redux";
 import ReduxComponents from "./ReduxComponents.js";
-import { withRouter } from "react-router-dom";
 import "./App.css";
 
-class Org extends React.Component {
-  goToRfcs = () => {
-    this.props.history.push("/rfc");
-  };
-
+class Rfc extends React.Component {
   componentDidMount() {
-    this.props.apiGet("orgList", []);
+    this.props.apiGet("rfcList", []);
   }
 
-  showOrgModal = (id) => {
-    this.props.setVisible("orgModal", id);
+  showRfcModal = (id) => {
+    this.props.setVisible("rfcModal", id);
   };
 
   render() {
@@ -26,7 +21,7 @@ class Org extends React.Component {
           <thead>
             <tr>
               <th colSpan="4">
-                <h3>Unidades Organizacionales</h3>
+                <h3>Contribuyentes</h3>
               </th>
             </tr>
             <tr>
@@ -34,7 +29,7 @@ class Org extends React.Component {
                 <button
                   className="btn btn-primary"
                   onClick={() => {
-                    this.showOrgModal(0);
+                    this.showRfcModal(0);
                   }}
                 >
                   Agregar
@@ -44,36 +39,32 @@ class Org extends React.Component {
           </thead>
           <tbody>
             {
-              //this.state.data.map((org) => {
-              Array.isArray(this.props.api.orgList) &&
-              this.props.api.orgList.length > 0
-                ? this.props.api.orgList.map((org) => {
+              Array.isArray(this.props.api.rfcList) &&
+              this.props.api.rfcList.length > 0
+                ? this.props.api.rfcList.map((rfc) => {
                     return (
                       <tr>
                         <td style={{ fontSize: 18, color: "#007bff" }}>
-                          {org.code}
+                          {rfc.code}
                         </td>
                         <td style={{ textAlign: "center", width: "50%" }}>
                           <button
                             className="btn btn-primary"
                             onClick={() => {
-                              this.props.apiGet("orgItem", org.id);
-                              this.showOrgModal(org.id);
+                              this.props.apiGet("rfcItem", rfc.id);
+                              this.showRfcModal(rfc.id);
                             }}
                           >
                             Editar
                           </button>
                           &nbsp;
+                          
+                        
                           <button
                             className="btn btn-primary"
-                            onClick={this.goToRfcs}
-                          >
-                            Contribuyentes
-                          </button>
-                          &nbsp;
-                          <button
-                            className="btn btn-primary"
-                            onClick={() => {}}
+                            onClick={() => {
+                              this.showRfcModal(rfc.id);
+                            }}
                           >
                             Contadores
                           </button>
@@ -81,7 +72,7 @@ class Org extends React.Component {
                           <button
                             className="btn btn-danger"
                             onClick={() => {
-                              this.props.apiDelete("orgItem", org.id);
+                              this.props.apiDelete("rfcItem", rfc.id);
                             }}
                           >
                             Eliminar
@@ -95,10 +86,11 @@ class Org extends React.Component {
           </tbody>
         </Table>
         <Provider store={ReduxComponents.store}>
-          <ReduxComponents.OrgModal />
+          <ReduxComponents.RfcModal />
         </Provider>
       </React.Fragment>
     );
   }
 }
-export default withRouter(Org);
+
+export default Rfc;
