@@ -3,6 +3,7 @@ import React from "react";
 import Table from "react-bootstrap/Table";
 import { Provider } from "react-redux";
 import ReduxComponents from "./ReduxComponents.js";
+import { withRouter } from "react-router-dom";
 import "./App.css";
 
 class Rfc extends React.Component {
@@ -22,6 +23,11 @@ class Rfc extends React.Component {
             <tr>
               <th colSpan="4">
                 <h3>Contribuyentes</h3>
+              </th>
+            </tr>
+            <tr>
+              <th colSpan="4">
+                <a onClick={()=>{this.props.history.push("/configuration")}} href="#">Organizaciones</a>
               </th>
             </tr>
             <tr>
@@ -92,5 +98,5 @@ class Rfc extends React.Component {
     );
   }
 }
+export default withRouter(Rfc);
 
-export default Rfc;

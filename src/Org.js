@@ -57,7 +57,6 @@ class Org extends React.Component {
                           <button
                             className="btn btn-primary"
                             onClick={() => {
-                              this.props.apiGet("orgItem", org.id);
                               this.showOrgModal(org.id);
                             }}
                           >

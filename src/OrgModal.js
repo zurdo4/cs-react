@@ -6,6 +6,8 @@ import "./App.css";
 class OrgModal extends React.Component {
   closeModal = (e) => {
     e.preventDefault();
+
+   
     this.props.setHidden("orgModal");
     return false;
   };

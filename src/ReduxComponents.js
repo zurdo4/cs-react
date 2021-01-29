@@ -41,7 +41,12 @@ export const apiDelete = function (obj, value) {
 };
 
 export const apiReducer = function (
-  state = { orgList: [], orgItem: { id: 0, code: "" } },
+  state = {
+    orgList: [],
+    orgItem: { id: 0, code: "" },
+    rfcList: [],
+    rfcItem: { id: 0, code: "" },
+  },
   action
 ) {
   if (action.type === "api-get") {
@@ -155,6 +160,11 @@ export const visibleReducer = function (
         return Object.assign({}, state, {
           rfcModal_visible: false,
         });
+
+      case "orgModal":
+        return Object.assign({}, state, {
+          orgModal_visible: false,
+        });
       default:
         break;
     }
@@ -231,9 +241,31 @@ export const api = (store) => (next) => (action) => {
 
   if (action.type === "api-get" && action.obj === "rfcList") {
     axios
-      .get("http://129.146.175.158:8080/cs/admin/rfcs")
+      .get("http://129.146.175.158:8080/cs/admin/orgs/" + action.value + "/rfcs"  )
       .then((res) => {
         action.value = res.data;
+        return next(action);
+      })
+      .catch((error) => console.log(error));
+    return;
+  }
+
+  if (action.type === "api-get" && action.obj === "rfcItem") {
+    axios
+      .get("http://129.146.175.158:8080/cs/admin/rfcs/" + action.value)
+      .then((res) => {
+        action.value = { id: res.data.id, code: res.data.code };
+        return next(action);
+      })
+      .catch((error) => console.log(error));
+    return;
+  }
+
+  if (action.type === "api-get" && action.obj === "orgItem") {
+    axios
+      .get("http://129.146.175.158:8080/cs/admin/orgs/" + action.value)
+      .then((res) => {
+        action.value = { id: res.data.id, code: res.data.code };
         return next(action);
       })
       .catch((error) => console.log(error));
