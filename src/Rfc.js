@@ -8,7 +8,7 @@ import "./App.css";
 
 class Rfc extends React.Component {
   componentDidMount() {
-    this.props.apiGet("rfcList", []);
+    this.props.apiGet("rfcList", this.props.value.orgId_value);
   }
 
   showRfcModal = (id) => {
@@ -27,7 +27,14 @@ class Rfc extends React.Component {
             </tr>
             <tr>
               <th colSpan="4">
-                <a onClick={()=>{this.props.history.push("/configuration")}} href="#">Organizaciones</a>
+                <a
+                  onClick={() => {
+                    this.props.history.push("/configuration");
+                  }}
+                  href="#"
+                >
+                  Organizaciones
+                </a>
               </th>
             </tr>
             <tr>
@@ -44,51 +51,47 @@ class Rfc extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {
-              Array.isArray(this.props.api.rfcList) &&
-              this.props.api.rfcList.length > 0
-                ? this.props.api.rfcList.map((rfc) => {
-                    return (
-                      <tr>
-                        <td style={{ fontSize: 18, color: "#007bff" }}>
-                          {rfc.code}
-                        </td>
-                        <td style={{ textAlign: "center", width: "50%" }}>
-                          <button
-                            className="btn btn-primary"
-                            onClick={() => {
-                              this.props.apiGet("rfcItem", rfc.id);
-                              this.showRfcModal(rfc.id);
-                            }}
-                          >
-                            Editar
-                          </button>
-                          &nbsp;
-                          
-                        
-                          <button
-                            className="btn btn-primary"
-                            onClick={() => {
-                              this.showRfcModal(rfc.id);
-                            }}
-                          >
-                            Contadores
-                          </button>
-                          &nbsp;
-                          <button
-                            className="btn btn-danger"
-                            onClick={() => {
-                              this.props.apiDelete("rfcItem", rfc.id);
-                            }}
-                          >
-                            Eliminar
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                : null
-            }
+            {Array.isArray(this.props.api.rfcList) &&
+            this.props.api.rfcList.length > 0
+              ? this.props.api.rfcList.map((rfc) => {
+                  return (
+                    <tr>
+                      <td style={{ fontSize: 18, color: "#007bff" }}>
+                        {rfc.code}
+                      </td>
+                      <td style={{ textAlign: "center", width: "50%" }}>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => {
+                            this.props.apiGet("rfcItem", rfc.id);
+                            this.showRfcModal(rfc.id);
+                          }}
+                        >
+                          Editar
+                        </button>
+                        &nbsp;
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => {
+                            this.showRfcModal(rfc.id);
+                          }}
+                        >
+                          Contadores
+                        </button>
+                        &nbsp;
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => {
+                            this.props.apiDelete("rfcItem", rfc.id);
+                          }}
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              : null}
           </tbody>
         </Table>
         <Provider store={ReduxComponents.store}>
@@ -99,4 +102,3 @@ class Rfc extends React.Component {
   }
 }
 export default withRouter(Rfc);
-

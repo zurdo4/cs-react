@@ -7,8 +7,9 @@ import { withRouter } from "react-router-dom";
 import "./App.css";
 
 class Org extends React.Component {
-  goToRfcs = () => {
-    this.props.history.push("/rfc");
+  goToRfcs = (id) => {
+     this.props.setValue("orgId", id);
+     this.props.history.push("/rfc");
   };
 
   componentDidMount() {
@@ -49,7 +50,7 @@ class Org extends React.Component {
               this.props.api.orgList.length > 0
                 ? this.props.api.orgList.map((org) => {
                     return (
-                      <tr>
+                      <tr  key={org.id}>
                         <td style={{ fontSize: 18, color: "#007bff" }}>
                           {org.code}
                         </td>
@@ -65,7 +66,7 @@ class Org extends React.Component {
                           &nbsp;
                           <button
                             className="btn btn-primary"
-                            onClick={this.goToRfcs}
+                            onClick={ () => {this.goToRfcs(org.id)}}
                           >
                             Contribuyentes
                           </button>

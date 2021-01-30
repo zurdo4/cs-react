@@ -240,25 +240,34 @@ export const api = (store) => (next) => (action) => {
   }
 
   if (action.type === "api-get" && action.obj === "rfcList") {
-    axios
-      .get("http://129.146.175.158:8080/cs/admin/orgs/" + action.value + "/rfcs"  )
-      .then((res) => {
-        action.value = res.data;
-        return next(action);
-      })
-      .catch((error) => console.log(error));
-    return;
+    if (action.value > 0) {
+      axios
+        .get("http://129.146.175.158:8080/cs/admin/rfcs?orgId=" + action.value)
+        .then((res) => {
+          action.value = res.data;
+          return next(action);
+        })
+        .catch((error) => console.log(error));
+      return;
+    }
+    action.value = [];
+    return next(action);
   }
 
   if (action.type === "api-get" && action.obj === "rfcItem") {
-    axios
-      .get("http://129.146.175.158:8080/cs/admin/rfcs/" + action.value)
-      .then((res) => {
-        action.value = { id: res.data.id, code: res.data.code };
-        return next(action);
-      })
-      .catch((error) => console.log(error));
-    return;
+    if (action.value > 0) {
+      axios
+        .get("http://129.146.175.158:8080/cs/admin/rfcs/" + action.value)
+        .then((res) => {
+          action.value = { id: res.data.id, code: res.data.code };
+          return next(action);
+        })
+        .catch((error) => console.log(error));
+      return;
+    }
+    action.value = { id: 0, code: "" };
+
+    return next(action);
   }
 
   if (action.type === "api-get" && action.obj === "orgItem") {
@@ -290,7 +299,7 @@ export const api = (store) => (next) => (action) => {
     axios
       .post("http://129.146.175.158:8080/cs/admin/rfcs", action.value)
       .then((res) => {
-        store.dispatch(apiGet("rfcList", []));
+        store.dispatch(apiGet("rfcList", action.value.org_id));
         store.dispatch(setHidden("rfcModal"));
       })
       .catch((error) => {
@@ -344,10 +353,11 @@ export const api = (store) => (next) => (action) => {
     axios
       .post("http://129.146.175.158:8080/cs/admin/rfcs", action.value)
       .then((res) => {
-        store.dispatch(apiGet("rfcList", []));
+        store.dispatch(apiGet("rfcList", action.value.org_id));
         store.dispatch(setHidden("rfcModal"));
       })
       .catch((error) => {
+        alert("ERROR:" + error);
         console.log(error);
       });
 

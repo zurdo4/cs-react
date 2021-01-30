@@ -15,8 +15,8 @@ class RfcModal extends React.Component {
   };
 
   submit = (e) => {
+    e.preventDefault();
     if (this.props.value.rfcCode_value === "") {
-      e.preventDefault();
       this.props.setValue("message", "La clave es requerida");
       return;
     }
@@ -24,7 +24,6 @@ class RfcModal extends React.Component {
     var re = /^[A-Za-z0-9]+$/g;
 
     if (!re.test(this.props.value.rfcCode_value)) {
-      e.preventDefault();
       this.props.setValue("message", "Solo letras y/o numeros sin espacios");
       return;
     }
@@ -33,11 +32,13 @@ class RfcModal extends React.Component {
       this.props.apiPost("rfcItem", {
         id: this.props.value.rfcId_value,
         code: this.props.value.rfcCode_value,
+        org_id: this.props.value.orgId_value,
       });
     } else {
       this.props.apiPut("rfcItem", {
         id: this.props.value.rfcId_value,
         code: this.props.value.rfcCode_value,
+        org_id: this.props.value.orgId_value,
       });
     }
   };

@@ -7,7 +7,6 @@ class OrgModal extends React.Component {
   closeModal = (e) => {
     e.preventDefault();
 
-   
     this.props.setHidden("orgModal");
     return false;
   };
@@ -17,8 +16,9 @@ class OrgModal extends React.Component {
   };
 
   submit = (e) => {
+    e.preventDefault();
+
     if (this.props.value.orgCode_value === "") {
-      e.preventDefault();
       this.props.setValue("message", "La clave es requerida");
       return;
     }
@@ -26,7 +26,6 @@ class OrgModal extends React.Component {
     var re = /^[A-Za-z0-9]+$/g;
 
     if (!re.test(this.props.value.orgCode_value)) {
-      e.preventDefault();
       this.props.setValue("message", "Solo letras y/o numeros sin espacios");
       return;
     }
@@ -44,9 +43,6 @@ class OrgModal extends React.Component {
     }
   };
 
-
-
-
   render2() {
     return (
       <React.Fragment>
@@ -54,16 +50,16 @@ class OrgModal extends React.Component {
           <form onSubmit={this.submit}>
             <div className="modal-body">
               <div className="form-group">
-                <p align="center">El número de contacto no tiene 10 dígitos.<br/>El número capturado excede los 10 o capturo menos dígitos.<br/> Favor de validar.</p>
-               
+                <p align="center">
+                  El número de contacto no tiene 10 dígitos.
+                  <br />
+                  El número capturado excede los 10 o capturo menos dígitos.
+                  <br /> Favor de validar.
+                </p>
               </div>
-            
             </div>
             <div className="modal-footer">
-              <button type="submit" >
-                Aceptar
-              </button>
-           
+              <button type="submit">Aceptar</button>
             </div>
           </form>
         </Modal>
