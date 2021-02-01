@@ -3,6 +3,8 @@ import Org from "./Org.js";
 import OrgModal from "./OrgModal.js";
 import Rfc from "./Rfc.js";
 import RfcModal from "./RfcModal.js";
+import Analyst from "./Analyst.js";
+import AnalystModal from "./AnalystModal.js";
 
 import axios from "axios";
 
@@ -46,6 +48,8 @@ export const apiReducer = function (
     orgItem: { id: 0, code: "" },
     rfcList: [],
     rfcItem: { id: 0, code: "" },
+    analystList: [],
+    analystItem: { id: 0, code: "" },
   },
   action
 ) {
@@ -59,6 +63,10 @@ export const apiReducer = function (
         return Object.assign({}, state, { rfcList: action.value });
       case "rfcItem":
         return Object.assign({}, state, { rfcItem: action.value });
+      case "analystList":
+        return Object.assign({}, state, { analystList: action.value });
+      case "analystItem":
+        return Object.assign({}, state, { analystItem: action.value });
 
       default:
         break;
@@ -69,6 +77,8 @@ export const apiReducer = function (
     switch (action.obj) {
       case "orgItem":
         return Object.assign({}, state, { orgItem: action.value });
+      case "analystItem":
+        return Object.assign({}, state, { analystItem: action.value });
       default:
         break;
     }
@@ -77,7 +87,12 @@ export const apiReducer = function (
 };
 
 export const updatedReducer = function (
-  state = { orgList_updated: false, orgModal_updated: false },
+  state = {
+    orgList_updated: false,
+    orgModal_updated: false,
+    analystList_updated: false,
+    analystModal_updated: false,
+  },
   action
 ) {
   if (action.type === "updated") {
@@ -101,7 +116,15 @@ export const updatedReducer = function (
         return Object.assign({}, state, {
           rfcList_updated: action.value,
         });
+      case "analystModal":
+        return Object.assign({}, state, {
+          analystModal_updated: action.value,
+        });
 
+      case "analystList":
+        return Object.assign({}, state, {
+          analystList_updated: action.value,
+        });
       default:
         break;
     }
@@ -111,7 +134,15 @@ export const updatedReducer = function (
 };
 
 export const valueReducer = function (
-  state = { orgId_value: 0, orgCode_value: "", message_value: "" },
+  state = {
+    orgId_value: 0,
+    orgCode_value: "",
+    rfcId_value: 0,
+    rfcCode_value: "",
+    analystId_value: 0,
+    analystCode_value: "",
+    message_value: "",
+  },
   action
 ) {
   if (action.type === "value") {
@@ -124,9 +155,12 @@ export const valueReducer = function (
         return Object.assign({}, state, { rfcId_value: action.value });
       case "rfcCode":
         return Object.assign({}, state, { rfcCode_value: action.value });
+      case "analystId":
+        return Object.assign({}, state, { analystId_value: action.value });
+      case "analystCode":
+        return Object.assign({}, state, { analystCode_value: action.value });
       case "message":
         return Object.assign({}, state, { message_value: action.value });
-
       default:
         break;
     }
@@ -150,6 +184,12 @@ export const visibleReducer = function (
         return Object.assign({}, state, {
           rfcModal_visible: true,
         });
+
+      case "analystModal":
+        return Object.assign({}, state, {
+          analystModal_visible: true,
+        });
+
       default:
         break;
     }
@@ -165,6 +205,12 @@ export const visibleReducer = function (
         return Object.assign({}, state, {
           orgModal_visible: false,
         });
+
+      case "analystModal":
+        return Object.assign({}, state, {
+          analystModal_visible: false,
+        });
+
       default:
         break;
     }
@@ -254,6 +300,21 @@ export const api = (store) => (next) => (action) => {
     return next(action);
   }
 
+  if (action.type === "api-get" && action.obj === "analystList") {
+    if (action.value > 0) {
+      axios
+        .get("http://129.146.175.158:8080/cs/admin/analysts?orgId=" + action.value)
+        .then((res) => {
+          action.value = res.data;
+          return next(action);
+        })
+        .catch((error) => console.log(error));
+      return;
+    }
+    action.value = [];
+    return next(action);
+  }
+
   if (action.type === "api-get" && action.obj === "rfcItem") {
     if (action.value > 0) {
       axios
@@ -279,6 +340,21 @@ export const api = (store) => (next) => (action) => {
       })
       .catch((error) => console.log(error));
     return;
+  }
+
+  if (action.type === "api-get" && action.obj === "analystItem") {
+    if (action.value > 0) {
+      axios
+        .get("http://129.146.175.158:8080/cs/admin/analysts/" + action.value)
+        .then((res) => {
+          action.value = { id: res.data.id, code: res.data.code };
+          return next(action);
+        })
+        .catch((error) => console.log(error));
+      return;
+    }
+    action.value = { id: 0, code: "" };
+    return next(action);
   }
 
   if (action.type === "api-post" && action.obj === "orgItem") {
@@ -309,6 +385,21 @@ export const api = (store) => (next) => (action) => {
     return;
   }
 
+  if (action.type === "api-post" && action.obj === "analystItem") {
+
+    axios
+      .post("http://129.146.175.158:8080/cs/admin/analysts", action.value)
+      .then((res) => {
+        store.dispatch(apiGet("analystList", action.value.org_id));
+        store.dispatch(setHidden("analystModal"));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    return;
+  }
+
   if (action.type === "api-delete" && action.obj === "orgItem") {
     axios
       .delete("http://129.146.175.158:8080/cs/admin/orgs/" + action.value)
@@ -324,9 +415,22 @@ export const api = (store) => (next) => (action) => {
 
   if (action.type === "api-delete" && action.obj === "rfcItem") {
     axios
-      .delete("http://129.146.175.158:8080/cs/admin/rfcs/" + action.value)
+      .delete("http://129.146.175.158:8080/cs/admin/rfcs/" + action.value.id)
       .then((res) => {
-        store.dispatch(apiGet("rfcList", []));
+        store.dispatch(apiGet("rfcList", action.value.org_id));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    return;
+  }
+
+  if (action.type === "api-delete" && action.obj === "analystItem") {
+    axios
+      .delete("http://129.146.175.158:8080/cs/admin/analysts/" + action.value.id)
+      .then((res) => {
+        store.dispatch(apiGet("analystList", action.value.org_id));
       })
       .catch((error) => {
         console.log(error);
@@ -357,12 +461,27 @@ export const api = (store) => (next) => (action) => {
         store.dispatch(setHidden("rfcModal"));
       })
       .catch((error) => {
-        alert("ERROR:" + error);
         console.log(error);
       });
 
     return;
   }
+
+  if (action.type === "api-put" && action.obj === "analystItem") {
+
+    axios
+      .post("http://129.146.175.158:8080/cs/admin/analysts", action.value)
+      .then((res) => {
+        store.dispatch(apiGet("analystList", action.value.org_id));
+        store.dispatch(setHidden("analystModal"));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    return;
+  }
+
 
   if (action.type === "visible" && action.obj === "orgModal") {
     store.dispatch(setValue("message", ""));
@@ -407,7 +526,31 @@ export const api = (store) => (next) => (action) => {
       action.value = { id: 0, code: "" };
       store.dispatch(setValue("rfcId", action.value.id));
       store.dispatch(setValue("rfcCode", action.value.code));
+      return next(action);
+    }
+  }
 
+
+
+  if (action.type === "visible" && action.obj === "analystModal") {
+    store.dispatch(setValue("message", ""));
+
+    if (action.value > 0) {
+      axios
+        .get("http://129.146.175.158:8080/cs/admin/analysts/" + action.value)
+        .then((res) => {
+          action.value = { id: res.data.id, code: res.data.code };
+          store.dispatch(setValue("analystId", action.value.id));
+          store.dispatch(setValue("analystCode", action.value.code));
+
+          return next(action);
+        })
+        .catch((error) => console.log(error));
+      return;
+    } else {
+      action.value = { id: 0, code: "" };
+      store.dispatch(setValue("analystId", action.value.id));
+      store.dispatch(setValue("analystCode", action.value.code));
       return next(action);
     }
   }
@@ -420,7 +563,8 @@ var reduxComponents = {
   OrgModal: connect(mapStateToProps, mapDispatchToProps)(OrgModal),
   Rfc: connect(mapStateToProps, mapDispatchToProps)(Rfc),
   RfcModal: connect(mapStateToProps, mapDispatchToProps)(RfcModal),
-
+  Analyst: connect(mapStateToProps, mapDispatchToProps)(Analyst),
+  AnalystModal: connect(mapStateToProps, mapDispatchToProps)(AnalystModal),
   store: createStore(reducers, applyMiddleware(api)),
 };
 

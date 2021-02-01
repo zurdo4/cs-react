@@ -12,6 +12,11 @@ class Org extends React.Component {
      this.props.history.push("/rfc");
   };
 
+  goToAnalysts = (id) => {
+    this.props.setValue("orgId", id);
+    this.props.history.push("/analyst");
+ };
+
   componentDidMount() {
     this.props.apiGet("orgList", []);
   }
@@ -73,7 +78,7 @@ class Org extends React.Component {
                           &nbsp;
                           <button
                             className="btn btn-primary"
-                            onClick={() => {}}
+                            onClick={() => {this.goToAnalysts(org.id)}}
                           >
                             Contadores
                           </button>

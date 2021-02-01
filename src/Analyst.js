@@ -6,16 +6,16 @@ import ReduxComponents from "./ReduxComponents.js";
 import { withRouter } from "react-router-dom";
 import "./App.css";
 
-class Rfc extends React.Component {
+class Analyst extends React.Component {
 
   
   componentDidMount() {
     this.props.apiGet("orgItem", this.props.value.orgId_value);
-    this.props.apiGet("rfcList", this.props.value.orgId_value);
+    this.props.apiGet("analystList", this.props.value.orgId_value);
   }
 
-  showRfcModal = (id) => {
-    this.props.setVisible("rfcModal", id);
+  showAnalystModal = (id) => {
+    this.props.setVisible("analystModal", id);
   };
 
   render() {
@@ -25,7 +25,7 @@ class Rfc extends React.Component {
           <thead>
             <tr>
               <th colSpan="4">
-                <h3>Contribuyentes( {this.props.api.orgItem.code} )</h3>
+                <h3>Contadores( {this.props.api.orgItem.code} )</h3>
               </th>
             </tr>
             <tr>
@@ -45,7 +45,7 @@ class Rfc extends React.Component {
                 <button
                   className="btn btn-primary"
                   onClick={() => {
-                    this.showRfcModal(0);
+                    this.showAnalystModal(0);
                   }}
                 >
                   Agregar
@@ -54,20 +54,20 @@ class Rfc extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(this.props.api.rfcList) &&
-            this.props.api.rfcList.length > 0
-              ? this.props.api.rfcList.map((rfc) => {
+            {Array.isArray(this.props.api.analystList) &&
+            this.props.api.analystList.length > 0
+              ? this.props.api.analystList.map((analyst) => {
                   return (
                     <tr>
                       <td style={{ fontSize: 18, color: "#007bff" }}>
-                        {rfc.code}
+                        {analyst.code}
                       </td>
                       <td style={{ textAlign: "center", width: "50%" }}>
                         <button
                           className="btn btn-primary"
                           onClick={() => {
-                            this.props.apiGet("rfcItem", rfc.id);
-                            this.showRfcModal(rfc.id);
+                            this.props.apiGet("analystItem", analyst.id);
+                            this.showAnalystModal(analyst.id);
                           }}
                         >
                           Editar
@@ -76,16 +76,16 @@ class Rfc extends React.Component {
                         <button
                           className="btn btn-primary"
                           onClick={() => {
-                            this.showRfcModal(rfc.id);
+                            this.showAnalystModal(analyst.id);
                           }}
                         >
-                          Contadores
+                          Contribuyentes
                         </button>
                         &nbsp;
                         <button
                           className="btn btn-danger"
                           onClick={() => {
-                            this.props.apiDelete("rfcItem", { id: rfc.id, org_id:rfc.org.id } );
+                            this.props.apiDelete("analystItem",  {id: analyst.id, org_id: analyst.org.id} );
                           }}
                         >
                           Eliminar
@@ -98,10 +98,10 @@ class Rfc extends React.Component {
           </tbody>
         </Table>
         <Provider store={ReduxComponents.store}>
-          <ReduxComponents.RfcModal />
+          <ReduxComponents.AnalystModal />
         </Provider>
       </React.Fragment>
     );
   }
 }
-export default withRouter(Rfc);
+export default withRouter(Analyst);

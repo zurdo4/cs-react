@@ -4,13 +4,11 @@ import Console from "./Console";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, ListGroup } from "react-bootstrap";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import  ReduxComponents  from "./ReduxComponents.js"
+import ReduxComponents from "./ReduxComponents.js";
 
-import {Provider} from "react-redux";
+import { Provider } from "react-redux";
 
 function App() {
-
-  
   return (
     <Container>
       <Router>
@@ -35,22 +33,23 @@ function App() {
         </Route>
 
         <Route path="/configuration">
-        <Provider store={ReduxComponents.store}>
-          <ReduxComponents.Org />
+          <Provider store={ReduxComponents.store}>
+            <ReduxComponents.Org />
           </Provider>
         </Route>
 
         <Route path="/rfc">
-        <Provider store={ReduxComponents.store}>
-          <ReduxComponents.Rfc />
+          <Provider store={ReduxComponents.store}>
+            <ReduxComponents.Rfc />
           </Provider>
         </Route>
 
-
-
+        <Route path="/analyst">
+          <Provider store={ReduxComponents.store}>
+            <ReduxComponents.Analyst />
+          </Provider>
+        </Route>
       </Router>
-
-    
     </Container>
   );
 }
